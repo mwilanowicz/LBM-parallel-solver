@@ -1,0 +1,14 @@
+main
+test_bin
+*.o
+*.obj
+*.exe
+*.out
+
+build/
+bin/
+
+.DS_Store
+*/.DS_Store
+
+papers/
