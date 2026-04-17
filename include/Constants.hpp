@@ -5,7 +5,7 @@
 File: Constants.hpp
 Description: D2Q9 model constants and simulation parameters for Lattice Boltzmann Method.
 Author: Marcel Wilanowicz
-Date: 2026-04-08
+Date: 2026-04-15
 */
 
 namespace LBM {
@@ -33,6 +33,10 @@ namespace LBM {
         {1, -1} // Down-Right vertex
     */
 
+    // Opposite directions for LBM bounce-back [Mohamad, 8.3.1 Bounce-Back]: 
+    // 0->0, 1->3, 2->4, 3->1, 4->2, 5->7, 6->8, 7->5, 8->6
+    inline constexpr std::array<int, Q> opposite = {0, 3, 4, 1, 2, 7, 8, 5, 6};
+
     // Weight scalars (w_i) as function distribution coefficients [He & Luo, 1997, Eq. 15]
     inline constexpr std::array<double, Q> w = { 
         4.0 / 9.0, // Rest vertex
@@ -51,12 +55,28 @@ namespace LBM {
 
     // ---------------  Simulation parameters (Compile-time) ---------------
     struct Config {
+        /*
+        Reynolds number: Re = (u * L)/nu [White, p.27 Eq. 1.24],
         
-        // Kinematic viscosity: ν = (2τ − 1)/6, therefore τ must be > 0.5 for stability [Chen & Doolen, 1998, p.335].
-        static constexpr double tau = 0.6; 
+        where:
+        - u is the flow velocity (in our case u_lid)
+        - L is characterstic length (in our case height)
+        - nu is kinematic viscosity
+        
+        To get target Re = 100:
+        nu = (2 * tau − 1)/6 = (2 * 0.8 - 1)/6 = 0.1
+        u_lid = (Re * nu) / H = (100 * 0.1) / 100 = 0.1
+        */
 
-        static constexpr int width = 200; // Width of the simulation grid
+        // Kinematic viscosity: nu = (2*tau − 1)/6, therefore tau must be > 0.5 for stability [Chen & Doolen, 1998, p.335].
+        static constexpr double tau = 0.8; 
+
+        // Lid velocity: we use 0.1 for low mach number
+        static constexpr double u_lid = 0.1;
+
+        static constexpr int width = 100; // Width of the simulation grid
         static constexpr int height = 100; // Height of the simulation grid
         static constexpr int max_time_steps = 10000; // Number of simulation time steps
     };
+
 }

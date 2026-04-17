@@ -2,45 +2,60 @@
 #include "Lattice.hpp"
 #include <iostream>
 #include <iomanip>
+#include <ios>
 
 /*
 File: main.cpp
 Description: Entry point for D2Q9 LBM simulation
 Author: Marcel Wilanowicz
-Date: 2026-04-08
+Date: 2026-04-17
 */
 
 int main() {
     std::cout << "Simulation width: " << LBM::Config::width << std::endl;
     std::cout << "Simulation height: " << LBM::Config::height << std::endl;
     std::cout << "Relaxation time (tau): " << LBM::Config::tau << std::endl;
+    std::cout << "Lid Velocity: " << LBM::Config::u_lid << std::endl;
     std::cout << "Number of time steps: " << LBM::Config::max_time_steps << std::endl;
 
     Lattice simulation;
 
     simulation.initialize();
 
-    double m0 = 0.0;
+    // Initial mass
+    double initial_mass = 0.0; 
     for (int y = 0; y < LBM::Config::height; ++y) {
         for (int x = 0; x < LBM::Config::width; ++x) {
-            m0 += simulation.get_rho(x, y);
+            initial_mass += simulation.get_rho(x, y);
         }
     }
-    std::cout << "Initial Mass: " << m0 << std::endl;
+    std::cout << "\nInitial Mass: " << initial_mass << std::endl;
 
-    for (int t = 1; t <= 1000; ++t) {
+    for (int t = 1; t <= LBM::Config::max_time_steps; ++t) {
         simulation.time_step();
 
-        if (t % 100 == 0) {
-            double m = 0.0;
+        // Mass monitoring (after 1000 steps each)
+        if (t % 1000 == 0) {
+            double current_mass = 0.0;
             for (int y = 0; y < LBM::Config::height; ++y) {
                 for (int x = 0; x < LBM::Config::width; ++x) {
-                    m += simulation.get_rho(x, y);
+                    current_mass += simulation.get_rho(x, y);
                 }
             }
-            std::cout << "Step: " << t << " | Mass: " << m << "\n";
+
+            // Computing relative error
+            double rel_error = std::abs(current_mass - initial_mass) / initial_mass;
+
+            std::cout << "Step: " << std::setw(6) << t 
+            << " | Mass: " << std::fixed << std::setprecision(8) << current_mass 
+            << " | Rel. Error: " << std::scientific << std::setprecision(3) << rel_error
+            << "\n";
         }
     }
+
+    // Export simulation data
+    simulation.save_vtk(LBM::Config::max_time_steps);
+    simulation.save_csv(LBM::Config::max_time_steps);
 
     return 0;
 }

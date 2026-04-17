@@ -70,10 +70,15 @@ The objective of this project is the development of a custom-built computational
 
 ### Bibliography
 
-* **Chen, S., & Doolen, G. D. (1998).** *Lattice Boltzmann method for fluid flows*.
+---
 
-* **Latt, J. (2007).** *Hydrodynamic limit of lattice Boltzmann equations*. 
+#### Journal Articles
+* **Chen, S., & Doolen, G. D. (1998).** Lattice Boltzmann method for fluid flows. *Annual Review of Fluid Mechanics*, 30, 329–364.
+* **Ghia, U., Ghia, K. N., & Shin, C. T. (1982).** High-Re solutions for incompressible flow using the Navier-Stokes equations and a multigrid method. *Journal of Computational Physics*, 48(3), 387–411.
+* **He, X., & Luo, L. S. (1997).** A priori derivation of the lattice Boltzmann equation from the continuous Boltzmann equation. *Physical Review E*, 55(6), R6333–R6336.
 
-* **He, X., & Luo, L. S. (1997).** *A priori derivation of the lattice Boltzmann equation from the continuous Boltzmann equation*. 
+---
 
-* **Guo, Z., Shi, B., & Wang, N. (2000).** *Lattice BGK model for incompressible Navier-Stokes equation*.
+#### Books
+* **Mohamad, A. A. (2019).** *Lattice Boltzmann Method: Fundamentals and Engineering Applications with Computer Codes* (2nd ed.). Springer Nature.
+* **White, F. M. (2011).** *Fluid Mechanics* (7th ed.). McGraw-Hill.

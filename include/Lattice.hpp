@@ -11,7 +11,7 @@ It utilizes SoA (Structure of Arrays) layout for distribution functions to optim
 access.
 
 Author: Marcel Wilanowicz
-Date: 2026-04-08
+Date: 2026-04-17
 */
 
 class Lattice {
@@ -30,8 +30,7 @@ public:
         }
     }
 
-    // Map (linearize) the index based on x and y coordinates of the lattice (row-major order) 
-    // for quick memory access
+    // Map (linearize) the index based on x and y coordinates of the lattice (row-major order) for quick memory access
     inline size_t map_idx(int x, int y) const {
         return static_cast<size_t>(y) * LBM::Config::width + x; 
     }
@@ -103,9 +102,10 @@ public:
 
     // Performs a single discrete time step (delta t) of the LBM evolution.
     void time_step() {
+        // (x, y): actual position
         for (int y = 0; y < LBM::Config::height; ++y) {
             for (int x = 0; x < LBM::Config::width; ++x) {
-                size_t idx = map_idx(x, y);
+                size_t idx = map_idx(x, y); // Map actual position
 
                 double rho = 0.0;
                 double ux = 0.0;
@@ -131,15 +131,42 @@ public:
                     double f_eq = get_equilibrium(q, rho, u);
                     double f_coll = f_old[q][idx] - (1.0 / LBM::Config::tau) * (f_old[q][idx] - f_eq);
                     
-                    // Left side of the equation (target position). Applied periodic boundary conditions using % operator)
-                    int tx = (x + LBM::ex[q] + LBM::Config::width) % LBM::Config::width;
-                    int ty = (y + LBM::ey[q] + LBM::Config::height) % LBM::Config::height;
+                    // Left side of the equation (target position): applying bounce-back boundary condition
+                    int tx = (x + LBM::ex[q]);
+                    int ty = (y + LBM::ey[q]);
 
-                    // Time Step
-                    f_new[q][map_idx(tx, ty)] = f_coll;
+                    // Check for hitting the boundary: Did hit == wall
+                    if (tx < 0 || tx >= LBM::Config::width || ty < 0 || ty >= LBM::Config::height) {
+                        
+                        // If the wall is the moving lid (top)
+                        if (ty >= LBM::Config::height) {
+                            // Bounce-Back at the boundary [Mohamad, eq. 8.17]:
+                            double momentum_correction =  2 * ((rho * LBM::w[q]) / LBM::cs2) * (LBM::Config::u_lid * LBM::ex[q]);
+                            f_new[LBM::opposite[q]][idx] = f_coll - momentum_correction;
+                        }
+                        
+                        // Stationary walls (bottom, left, right)
+                        else {
+                            f_new[LBM::opposite[q]][idx] = f_coll;
+                        }
+                        
+                        
+                    }
+                    // Didn't hit == fluid
+                    else {
+                        // Time Step (mapping target position)
+                        f_new[q][map_idx(tx, ty)] = f_coll;
+                    }
+
                 }                
             }
         }
         swap();
     }
+
+    // Exports full velocity field (point data) for ParaView visualization
+    void save_vtk(int step);
+
+    // Exports centerline velocity profiles for Ghia et al. benchmark
+    void save_csv(int step);
 };
