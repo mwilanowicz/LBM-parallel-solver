@@ -6,27 +6,36 @@ This project features a custom-built, computational engine in C++ utilizing the 
 
 The implementation has been scaled from a sequential baseline to a memory-distributed parallel architecture using **MPI (Message Passing Interface)**.
 
+## Project Structure
+
+```text
+.
+├── include
+│   ├── Constants.hpp
+│   └── Lattice.hpp
+├── Makefile
+├── README.md
+├── schedule.md
+├── src
+│   ├── Lattice.cpp
+│   ├── main_par.cpp
+│   └── main_seq.cpp
+└── test
+    ├── assessment_100x100.ipynb
+    ├── assessment_256x256.ipynb
+    ├── assessment_512x512.ipynb
+    └── test_lattice.cpp
+```
+
 ## Features & Project Scope
 
-* **Distributed Domain Decomposition:** 1D spatial partitioning into horizontal bands with automated halo layer exchange (`MPI_Sendrecv` / `MPI_Barrier` coordination).
+* **Distributed Domain Decomposition:** 1D spatial partitioning into horizontal bands with halo exchange (`MPI_Sendrecv` / `MPI_Barrier` coordination).
 
 * **Physical Validation:** Verified fluid dynamics against the established data (Ghia et al.) using centerline velocity profiles ($u_x, u_y$).
 
 * **Parallel Bitwise Verification:** Spatial node-by-node identity ensuring bitwise reproducibility between sequential and parallel executions.
 
 * **Scalability Benchmarking:** Performance tracking across various grid sizes ($100\times100$, $256\times256$, $512\times512$) for speedup, efficiency and overhead analysis.
-
-## Project Structure
-
-* `/include/` - Core simulation configurations and class architecture (`Lattice.hpp`, `Constants.hpp`).
-
-* `/src/Lattice.cpp` - Core LBM solver algorithm implementation.
-
-* `/src/main_par.cpp` - Main application driver for the parallel MPI simulation.
-
-* `/src/main_seq.cpp` - Reference execution driver for the sequential baseline.
-
-* `/test/` - Unit tests (`test_lattice.cpp`) and 3-stage assessment notebooks per grid size.
 
 ## Quick Start
 
@@ -36,7 +45,11 @@ The implementation has been scaled from a sequential baseline to a memory-distri
 
 * C++17/20 compliant compiler (GCC / Clang)
 
-### Compilation & Execution (Makefile)
+### Compilation & Execution
+
+All commands must be run from the project root directory.
+
+To compile and run the simulation, run:
 
 ```bash
 # Compile the parallel solver
