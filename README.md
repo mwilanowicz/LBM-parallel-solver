@@ -15,7 +15,6 @@ The implementation has been scaled from a sequential baseline to a memory-distri
 │   └── Lattice.hpp
 ├── Makefile
 ├── README.md
-├── schedule.md
 ├── src
 │   ├── Lattice.cpp
 │   ├── main_par.cpp
